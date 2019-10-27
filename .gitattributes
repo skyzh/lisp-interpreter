@@ -1,3 +1,4 @@
 tests/* linguist-vendored
 ruby/run linguist-vendored
 Makefile linguist-vendored
+runtest.py linguist-vendored
