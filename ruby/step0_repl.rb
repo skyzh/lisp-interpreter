@@ -1,21 +1,21 @@
 require "readline"
 
-def read(x)
+def READ(x)
   x
 end
 
-def eval(x)
+def EVAL(x)
   x
 end
 
-def print(x)
-  p x
+def PRINT(x)
+  puts x
 end
 
 def rep(x)
-  eval(read(x))
+  PRINT(EVAL(READ(x)))
 end
 
 while (buf = Readline.readline("user> ", true))
-  puts(rep(buf))
+  rep(buf)
 end
