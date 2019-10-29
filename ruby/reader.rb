@@ -31,7 +31,7 @@ def read_list(r)
   end
 
   while (token = r.peek) != ")"
-    if not token
+    unless token
       raise "expected ')', got EOF"
     end
     data.push(read_from(r))
