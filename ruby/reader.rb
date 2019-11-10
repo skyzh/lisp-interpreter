@@ -37,6 +37,8 @@ def read_list(r)
     data.push(read_from(r))
   end
 
+  r.next
+
   data
 end
 
