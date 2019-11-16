@@ -1,9 +1,14 @@
 
 class Env
   # @param [Env] outer
-  def initialize(outer)
+  # @param [Array] binds
+  # @param [Array] exprs
+  def initialize(outer, binds, exprs)
     @outer = outer
     @data = {}
+    for i in 0...(binds.length)
+      @data[binds[i]] = exprs[i]
+    end
   end
 
   def set(key, val)
