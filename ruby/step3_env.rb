@@ -10,7 +10,7 @@ end
 # @param [Env] env
 def EVAL(x, env)
   case x
-  when Array then
+  when List then
     if x.empty?
       x
     else
@@ -19,7 +19,7 @@ def EVAL(x, env)
         env.set(x[1], EVAL(x[2], env))
         env.get(x[1])
       when :"let*" then
-        new_env = Env.new(env)
+        new_env = Env.new(env, [], [])
         x[1].each_slice(2) do |binding, val|
           new_env.set(binding, EVAL(val, new_env))
         end
@@ -39,7 +39,7 @@ def PRINT(x)
 end
 
 def default_environment
-  env = Env.new(nil)
+  env = Env.new(nil, [], [])
   env.set(:+, lambda { |a, b| a + b })
   env.set(:-, lambda { |a, b| a - b })
   env.set(:*, lambda { |a, b| a * b })
@@ -57,8 +57,12 @@ def eval_ast(ast, env)
   case ast
   when Symbol
     env.get(ast)
-  when Array
-    ast.map { |x| EVAL(x, env) }
+  when List
+    List.new(ast.map { |x| EVAL(x, env) })
+  when Vector
+    Vector.new(ast.map { |x| EVAL(x, env) })
+  when Hash
+    Hash[ast.map { |x, y| [x, EVAL(y, env) ] }]
   else
     ast
   end
