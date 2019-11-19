@@ -1,6 +1,7 @@
 require 'readline'
 require_relative 'reader'
 require_relative 'printer'
+require_relative 'types'
 
 def READ(x)
   read_str(x)
@@ -8,7 +9,7 @@ end
 
 def EVAL(x, env)
   case x
-  when Array then
+  when List then
     if x.empty?
       x
     else
@@ -45,8 +46,12 @@ def eval_ast(ast, env)
       raise "symbol not found"
     end
     env[ast]
-  when Array
-    ast.map { |x| EVAL(x, env) }
+  when List
+    List.new(ast.map { |x| EVAL(x, env) })
+  when Vector
+    Vector.new(ast.map { |x| EVAL(x, env) })
+  when Hash
+    Hash[ast.map { |x, y| [x, EVAL(y, env) ] }]
   else
     ast
   end
