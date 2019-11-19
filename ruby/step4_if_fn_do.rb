@@ -11,7 +11,7 @@ end
 # @param [Env] env
 def EVAL(x, env)
   case x
-  when Array then
+  when List then
     if x.empty?
       x
     else
@@ -55,7 +55,7 @@ def EVAL(x, env)
 end
 
 def PRINT(x)
-  puts(pr_str(x))
+  puts(pr_str(x, true))
 end
 
 def default_environment
@@ -74,12 +74,11 @@ end
 # @param [Env] env
 def eval_ast(ast, env)
   case ast
-  when Symbol
-    env.get(ast)
-  when Array
-    ast.map { |x| EVAL(x, env) }
-  else
-    ast
+  when Symbol then env.get(ast)
+  when List then List.new(ast.map { |x| EVAL(x, env) })
+  when Vector then Vector.new(ast.map { |x| EVAL(x, env) })
+  when Hash then Hash[ast.map { |x, y| [x, EVAL(y, env) ] }]
+  else ast
   end
 end
 

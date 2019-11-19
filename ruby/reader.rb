@@ -45,6 +45,12 @@ def read_list(r, left, right, constructor)
   data
 end
 
+# @param [String] token
+# @return String
+def parse_str(token)
+  token[1..-2].gsub(/\\./, {"\\\\" => "\\", "\\n" => "\n", "\\\"" => '"'})
+end
+
 # @param [Reader] r
 def read_atom(r)
   token = r.next
@@ -52,8 +58,9 @@ def read_atom(r)
   case token
   when /^-?[0-9]+$/ then token.to_i
   when /^-?[0-9][0-9.]*$/ then token.to_f
-  when /^"(?:\\.|[^\\"])*"$/ then token
+  when /^"(?:\\.|[^\\"])*"$/ then parse_str(token)
   when /^"/ then raise "expected '\"', got EOF"
+  when /^:/ then "\u029e#{token[1..-1]}"
   when "nil" then nil
   when "true" then true
   when "false" then false

@@ -1,4 +1,3 @@
-
 class Env
   # @param [Env] outer
   # @param [Array] binds
@@ -7,6 +6,10 @@ class Env
     @outer = outer
     @data = {}
     for i in 0...(binds.length)
+      if binds[i] == :&
+        @data[binds[i + 1]] = List.new(exprs.drop(i))
+        break
+      end
       @data[binds[i]] = exprs[i]
     end
   end
