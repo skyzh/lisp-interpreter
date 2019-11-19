@@ -1,3 +1,5 @@
+require_relative 'types'
+
 class Reader
   # @param [[String]] tokens
   def initialize(tokens)
@@ -23,22 +25,23 @@ def read_str(str)
 end
 
 # @param [Reader] r
-def read_list(r)
-  data = []
+# @param [String] left
+# @param [String] right
+def read_list(r, left, right, constructor)
+  data = constructor.new
 
-  if r.next != "("
-    raise "expected '('"
+  if r.next != left
+    raise "expected '#{left}'"
   end
 
-  while (token = r.peek) != ")"
+  while (token = r.peek) != right
     unless token
-      raise "expected ')', got EOF"
+      raise "expected '#{right}', got EOF"
     end
     data.push(read_from(r))
   end
 
   r.next
-
   data
 end
 
@@ -47,29 +50,24 @@ def read_atom(r)
   token = r.next
 
   case token
-  when /^-?[0-9]+$/ then
-    token.to_i
-  when /^-?[0-9][0-9.]*$/ then
-    token.to_f
-  when /^"(?:\\.|[^\\"])*"$/ then
-    token
-  when "nil" then
-    nil
-  when "true" then
-    true
-  when "false" then
-    false
-  else
-    token.to_sym
+  when /^-?[0-9]+$/ then token.to_i
+  when /^-?[0-9][0-9.]*$/ then token.to_f
+  when /^"(?:\\.|[^\\"])*"$/ then token
+  when /^"/ then raise "expected '\"', got EOF"
+  when "nil" then nil
+  when "true" then true
+  when "false" then false
+  else token.to_sym
   end
 end
 
 # @param [Reader] r
 def read_from(r)
-  if r.peek == "("
-    read_list(r)
-  else
-    read_atom(r)
+  case r.peek
+  when '(' then read_list(r, '(', ')', List)
+  when '[' then read_list(r, '[', ']', Vector)
+  when '{' then Hash[read_list(r, '{', '}', Array).each_slice(2).to_a]
+  else read_atom(r)
   end
 end
 
